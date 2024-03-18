@@ -3,24 +3,27 @@ from OpenGL.GLUT import *
 from Objects.Nave import Nave
 from Objects.Inimigo import Inimigo
 import random
+import math
 
 class Program:
     def __init__(self):
-        self.nave = Nave(
-            [-0.125, -0.75], 0.25, [0, 0, 1], [0, 0], 0,  []
-        )
         self.teclas = [False, False]
+        
+        self.nave = Nave(
+            [0, -0.75], 0.25, [0, 0, 1], [0, 0], 0,  []
+        )
         self.inimigos = []
         self.projeteis = []
-        self.ProjetilNumeroInit = 0
+        
+        self.numInimigosMortos = 0
 
     def criaInimigo(self):
         return Inimigo(
-            [-0.125, 0.75], 0.25, [1, 0, 0], [1, 0], 0,  []
+            [0, 0.75], 0.25, [1, 0, 0], [1, 0], 0,  []
         )
         
-    def geraInimigos(self):
-        for i in range(3):
+    def geraInimigos(self, num):
+        for i in range(num):
             self.inimigos.append(self.criaInimigo())
 
     def keyboardUp(self, key, x, y):
@@ -60,15 +63,27 @@ class Program:
             projetil.desenha()
             
     def deletaProjeteis(self):
-        projeteisParaApagar = []
         for projetil in self.projeteis:
             if projetil.cords[1] > 1 or projetil.cords[1] < -1:
-                projeteisParaApagar.append(projetil.numero)
+                self.projeteis.remove(projetil)
                 
-        for projetilParaApagar in projeteisParaApagar:
+    def detectaColisoes(self):
+        for inimigo in self.inimigos:
             for projetil in self.projeteis:
-                if projetil.numero == projetilParaApagar:
-                    self.projeteis.remove(projetil)
+                if projetil.isEnemy != True:
+                    distancia = math.sqrt((inimigo.cords[0] - projetil.cords[0])**2 + (inimigo.cords[1] - projetil.cords[1])**2)
+                    if distancia <= (inimigo.lengh/2)+(projetil.lengh/2):
+                        self.inimigos.remove(inimigo)
+                        self.projeteis.remove(projetil)
+                        self.geraInimigos(1)
+                        self.numInimigosMortos += 1
+                        print(self.numInimigosMortos)
+                        
+        for projetil in self.projeteis:
+            if projetil.isEnemy:
+                distancia = math.sqrt((self.nave.cords[0] - projetil.cords[0])**2 + (self.nave.cords[1] - projetil.cords[1])**2)
+                if distancia <= (self.nave.lengh/2)+(projetil.lengh/2):
+                    glutLeaveMainLoop()
         
     def desenha(self):
         glClear(GL_COLOR_BUFFER_BIT)
@@ -78,6 +93,7 @@ class Program:
         self.desenhaInimigos()
         self.desenhaProjeteis()
         
+        self.detectaColisoes()
         self.deletaProjeteis()
 
         glutSwapBuffers()
@@ -90,7 +106,7 @@ class Program:
         glutCreateWindow('testando')
         glClearColor(0,0,0,1)
         glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
-        self.geraInimigos()
+        self.geraInimigos(3)
         glutDisplayFunc(self.desenha)
         glutIdleFunc(self.desenha)
         glutKeyboardFunc(self.keyboard)

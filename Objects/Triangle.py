@@ -4,16 +4,19 @@ from Objects.Object import Object
 class Triangle(Object):
     def calcVertexs(self):
         return [
-            [self.cords[0], self.cords[1]],
-            [self.cords[0]+(self.lengh/2), self.cords[1]+self.lengh],
-            [self.cords[0]+self.lengh, self.cords[1]]
+            [self.cords[0]-self.lengh/2, self.cords[1]-self.lengh/2],
+            [self.cords[0], self.cords[1]+self.lengh/2],
+            [self.cords[0]+self.lengh/2, self.cords[1]-self.lengh/2]
         ]    
 
     def inverterVertical(self):
-        self.vertexs[1][1] = self.vertexs[1][1] - 2 * self.lengh
+        aux = self.vertexs[1][1]
+        self.vertexs[1][1] = self.vertexs[0][1]
+        self.vertexs[0][1] = aux
+        self.vertexs[2][1] = aux
 
     def inverterHorizontal(self):
-        self.vertexs[0][0], self.vertexs[2][0] = self.vertexs[2][0], self.vertexs[0][0]
+        pass
 
     def inverter(self):
         if self.invert[0]:
@@ -23,14 +26,7 @@ class Triangle(Object):
             self.inverterHorizontal()
 
     def rotater(self):
-        if self.rotate == 1:
-            self.vertexs[0][1] = self.vertexs[0][1]+self.lengh
-            self.vertexs[1][0] = self.vertexs[1][0]+self.lengh/2
-            self.vertexs[1][1] = self.vertexs[1][1]-self.lengh/2
-            self.vertexs[2][0] = self.vertexs[0][0]
-        if self.rotate == 2:
-            self.inverterHorizontal()
-            self.inverterVertical()
+        pass
 
     def desenha(self):
         self.vertexs = self.calcVertexs()
