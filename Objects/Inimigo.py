@@ -11,12 +11,12 @@ class Inimigo(Nave):
     
     def atirar(self, scream):
         atirando = [True, False]
-        if random.choice(atirando) and self.fireHite <= 0:
+        if random.choice(atirando) and self.fireRate <= 0:
             projetil = Projetil([self.vertexs[1][0], self.vertexs[1][1]], 0.05, [1, 0, 1], [1, 0], 0, [], True)
             
-            self.fireHite = 100-self.nivelInimigo
-            if self.fireHite < 0:
-                self.fireHite = 0
+            self.fireRate = 100-self.nivelInimigo
+            if self.fireRate < 0:
+                self.fireRate = 0
             scream.projeteis.append(projetil)
             
     def calcNewPosition(self):

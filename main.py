@@ -2,7 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from Objects.Nave import Nave
 from Objects.Inimigo import Inimigo
-import random
+from Objects.Triangle import Triangle
 import math
 
 class Program:
@@ -16,6 +16,9 @@ class Program:
         self.nivelInimigo = 0
         self.numInimigosMortos = 0
         self.numInimigosPorOnda = 1
+        self.numUpgrades = 0
+        self.numEscudos = 0
+        self.numOndas = 1
 
     def criaInimigo(self):
         return Inimigo(
@@ -33,15 +36,19 @@ class Program:
             self.teclas[1] = not self.teclas[1]
 
     def keyboard(self, key, x, y):
-        if key == b'k':
+        if key == b'j':
             self.nave.atirar(self)
+        elif key == b'k':
+            self.nave.upgrade(1, self)
+        elif key == b'l':
+            self.nave.upgrade(2, self)
         elif key == key == b'a':
             self.teclas[0] = not self.teclas[0]
         elif key == b'd':
             self.teclas[1] = not self.teclas[1]
         
     def desenhaNave(self):
-        self.nave.fireHite = self.nave.fireHite - 1
+        self.nave.fireRate = self.nave.fireRate - 1
         if self.teclas[0]:
             self.nave.calcNewPosition("esq")
         if self.teclas[1]:
@@ -50,7 +57,7 @@ class Program:
         
     def desenhaInimigos(self):
         for inimigo in self.inimigos:
-            inimigo.fireHite -= 1
+            inimigo.fireRate -= 1
             inimigo.calcNewPosition()
             inimigo.atirar(self)
             inimigo.desenha()
@@ -59,6 +66,27 @@ class Program:
         for projetil in self.projeteis:
             projetil.newPosition()
             projetil.desenha()
+
+    def desenhaNumUpgrades(self):
+        espaco = 0.02
+        for i in range(self.numUpgrades):
+            Triangle(
+                [-1+ ( (espaco+0.05)*(i+1) ), -0.95], 0.05, [0, 1, 1], [0, 0], 0, []
+            ).desenha()
+            
+    def desenhaNumEscudos(self):
+        espaco = 0.02
+        for i in range(self.numEscudos):
+            Triangle(
+                [1- ( (espaco+0.05)*(i+1) ), -0.95], 0.05, [1, 1, 1], [0, 0], 0, []
+            ).desenha()
+    
+    def desenhaNumOndas(self):
+        espaco = 0.02
+        for i in range(self.numOndas):
+            Triangle(
+                [-1+ ( (espaco+0.05)*(i+1) ), 0.95], 0.05, [1, 1, 0], [0, 0], 0, []
+            ).desenha()
             
     def deletaProjeteis(self):
         for projetil in self.projeteis:
@@ -74,8 +102,10 @@ class Program:
                         self.inimigos.remove(inimigo)
                         self.projeteis.remove(projetil)
                         if len(self.inimigos) == 0:
+                            self.numUpgrades += 1
                             self.nivelInimigo += 1
                             self.numInimigosPorOnda += 1
+                            self.numOndas += 1
                             self.geraInimigos(self.numInimigosPorOnda)
                         self.numInimigosMortos += 1
                         print(self.numInimigosMortos)
@@ -84,7 +114,11 @@ class Program:
             if projetil.isEnemy:
                 distancia = math.sqrt((self.nave.cords[0] - projetil.cords[0])**2 + (self.nave.cords[1] - projetil.cords[1])**2)
                 if distancia <= (self.nave.lengh/2)+(projetil.lengh/2):
-                    glutLeaveMainLoop()
+                    if self.numEscudos > 0:
+                        self.numEscudos -= 1
+                        self.projeteis.remove(projetil)
+                    else:
+                        glutLeaveMainLoop()
         
     def desenha(self):
         glClear(GL_COLOR_BUFFER_BIT)
@@ -95,16 +129,18 @@ class Program:
         self.desenhaProjeteis()
         self.desenhaNave()
         self.desenhaInimigos()
+        self.desenhaNumEscudos()
+        self.desenhaNumUpgrades()
+        self.desenhaNumOndas()
 
         self.deletaProjeteis()
-
         glutSwapBuffers()
         
     def inicio(self):
         glutInit()
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)
-        glutInitWindowSize(500,500)
-        glutInitWindowPosition(0,0)
+        glutInitWindowSize(700,700)
+        glutInitWindowPosition(0, 0)
         glutCreateWindow('testando')
         glClearColor(0,0,0,1)
         glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
