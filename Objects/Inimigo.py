@@ -19,7 +19,7 @@ class Inimigo(Nave):
                 self.fireHite = 0
             scream.projeteis.append(projetil)
             
-    def calcNewPosition(self, scream):
+    def calcNewPosition(self):
         if (self.newPosition-0.1 < self.cords[0]) and (self.newPosition+0.1 > self.cords[0]):
             self.newPosition = round(random.uniform(-1+self.lengh/2, 1-self.lengh/2), 1)
         else:

@@ -51,7 +51,7 @@ class Program:
     def desenhaInimigos(self):
         for inimigo in self.inimigos:
             inimigo.fireHite -= 1
-            inimigo.calcNewPosition(self)
+            inimigo.calcNewPosition()
             inimigo.atirar(self)
             inimigo.desenha()
             
@@ -90,11 +90,12 @@ class Program:
         glClear(GL_COLOR_BUFFER_BIT)
         glLoadIdentity()
         
+        self.detectaColisoes()
+        
+        self.desenhaProjeteis()
         self.desenhaNave()
         self.desenhaInimigos()
-        self.desenhaProjeteis()
-        
-        self.detectaColisoes()
+
         self.deletaProjeteis()
 
         glutSwapBuffers()
