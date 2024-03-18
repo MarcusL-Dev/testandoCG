@@ -15,6 +15,7 @@ class Program:
         self.projeteis = []
         self.nivelInimigo = 0
         self.numInimigosMortos = 0
+        self.numInimigosPorOnda = 1
 
     def criaInimigo(self):
         return Inimigo(
@@ -72,8 +73,10 @@ class Program:
                     if distancia <= (inimigo.lengh/2)+(projetil.lengh/2):
                         self.inimigos.remove(inimigo)
                         self.projeteis.remove(projetil)
-                        self.geraInimigos(1)
-                        self.nivelInimigo += 1
+                        if len(self.inimigos) == 0:
+                            self.nivelInimigo += 1
+                            self.numInimigosPorOnda += 1
+                            self.geraInimigos(self.numInimigosPorOnda)
                         self.numInimigosMortos += 1
                         print(self.numInimigosMortos)
                         
@@ -104,7 +107,7 @@ class Program:
         glutCreateWindow('testando')
         glClearColor(0,0,0,1)
         glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)
-        self.geraInimigos(3)
+        self.geraInimigos(self.numInimigosPorOnda)
         glutDisplayFunc(self.desenha)
         glutIdleFunc(self.desenha)
         glutKeyboardFunc(self.keyboard)
