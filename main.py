@@ -15,11 +15,13 @@ class Program:
         self.inimigos = []
         self.projeteis = []
         
+        self.nivelInimigo = 1
+        
         self.numInimigosMortos = 0
 
     def criaInimigo(self):
         return Inimigo(
-            [0, 0.75], 0.25, [1, 0, 0], [1, 0], 0,  []
+            [0, 0.75], 0.25, [1, 0, 0], [1, 0], 0,  [], self.nivelInimigo
         )
         
     def geraInimigos(self, num):
@@ -76,6 +78,7 @@ class Program:
                         self.inimigos.remove(inimigo)
                         self.projeteis.remove(projetil)
                         self.geraInimigos(1)
+                        self.nivelInimigo += 1
                         self.numInimigosMortos += 1
                         print(self.numInimigosMortos)
                         
