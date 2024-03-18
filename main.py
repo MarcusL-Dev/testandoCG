@@ -8,20 +8,17 @@ import math
 class Program:
     def __init__(self):
         self.teclas = [False, False]
-        
         self.nave = Nave(
             [0, -0.75], 0.25, [0, 0, 1], [0, 0], 0,  []
         )
         self.inimigos = []
         self.projeteis = []
-        
-        self.nivelInimigo = 1
-        
+        self.nivelInimigo = 0
         self.numInimigosMortos = 0
 
     def criaInimigo(self):
         return Inimigo(
-            [0, 0.75], 0.25, [1, 0, 0], [1, 0], 0,  [], self.nivelInimigo
+            [0, 0.75], 0.25, [1, 0, 0], [1, 0], 0, [], self.nivelInimigo
         )
         
     def geraInimigos(self, num):
@@ -45,17 +42,15 @@ class Program:
     def desenhaNave(self):
         self.nave.fireHite = self.nave.fireHite - 1
         if self.teclas[0]:
-            self.nave.newPosition("esq")
+            self.nave.calcNewPosition("esq")
         if self.teclas[1]:
-            self.nave.newPosition("dir") 
+            self.nave.calcNewPosition("dir") 
         self.nave.desenha()
         
     def desenhaInimigos(self):
-        lados = ["esq", "dir"]
         for inimigo in self.inimigos:
-            inimigo.fireHite = inimigo.fireHite - 1
-            lado = random.choice(lados)
-            inimigo.newPosition(lado)
+            inimigo.fireHite -= 1
+            inimigo.calcNewPosition(self)
             inimigo.atirar(self)
             inimigo.desenha()
             
